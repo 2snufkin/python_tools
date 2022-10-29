@@ -2,39 +2,74 @@ import os
 
 path = r'C:\Users\Pini\Downloads'
 
+# dealing with files
+def normalize_filename(filename):
+    clean = filename.replace('_', ' ').replace('.', ' ').replace('-', ' ')
+    return clean.title()
 
-def normalize_filename(folder_path):
-    # get file list
-    file_list = get_filesnames_from_folder(folder_path)
-    # loop over it
-    for file in file_list:
-        path = folder_path + '\\' + file
-        filename_no_ext = get_filename_from_path(path, False)
-        norm_filename = filename_no_ext.replace('-', ' ').title()
-
-    # for each file rename it
-
-
-def get_filesnames_from_folder(folder_path):
-    return os.listdir(folder_path)
-
-
+def get_name_or_extention(filename, isExtnetion):
+    '''
+    get the name out of filename or extention
+    :param filename:
+    :param isExtnetion: do you want to get only the extention
+    :return: name or extention
+    '''
+    splittuple = os.path.splitext(filename)
+    if isExtnetion:
+        return splittuple[1]
+    else:
+        return splittuple[0]
 def get_filename_from_path(path, is_extention):
     '''
-    return the filename from a given path
+    T.return the filename from a given path
     :param path: the path
     :param is_extention: true for returning also the file extenstion
     :return: the file name
     '''
+    # extract the filename
     filename = os.path.basename(path)
-    split_tup = os.path.splitext(filename)
+    # create a tuple from the name and ext
+    split_tuple = os.path.splitext(filename)
     if is_extention:
         return filename
     else:
-        return split_tup[0]
+        get_name_or_extention(filename, False)
+
+
+# dealing with folders
+def normalize_filesnames_in_folder(folder_path):
+    '''
+    normalize all the filenames in a folder
+    :param folderpath:
+    :return: a list of dict of before: after
+    '''
+    list_modif = []
+    filenames = get_filesnames_from_folder(folder_path)
+    for file in filenames:
+        extract_name = get_name_or_extention(file, False)
+        extention = get_name_or_extention(file, True)
+        clean = normalize_filename(extract_name)
+        old_name = folder_path + '\\' + file
+        new_name = f'{folder_path}\\{clean}{extention}'
+        os.rename(old_name, new_name)
+        list_modif.append({old_name, new_name})
+    return list_modif
 
 
 
-path = r'C:\Users\Pini\Downloads\2013.S06.1080p.BluRay.x265-RARBG-[rarbg.to](1).exe'
+def get_filesnames_from_folder(folder_path):
+    '''
+    return a list of all the filenames in this folder
+    :param folder_path:
+    :return:
+    '''
+    return os.listdir(folder_path)
 
-print(get_filename_from_path(path, False))
+
+list_modif = normalize_filesnames_in_folder(r'C:\Users\Pini\Downloads')
+print(list_modif)
+
+
+
+
+
