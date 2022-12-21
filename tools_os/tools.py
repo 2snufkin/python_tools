@@ -65,6 +65,8 @@ def get_filesnames_from_folder(folder_path):
     '''
     return os.listdir(folder_path)
 
+def delete_folder(path):
+    pass
 
 list_modif = normalize_filesnames_in_folder(r'C:\Users\Pini\Downloads')
 print(list_modif)
