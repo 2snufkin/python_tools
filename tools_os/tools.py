@@ -109,35 +109,45 @@ def list_subdirectories(rootdir):
         for subdir in dirs:
             list_dir.append(os.path.join(rootdir, subdir))
     return list_dir
-def prepend_multiple_lines(file_name, list_of_lines):
-    """Insert given list of strings as a new lines at the beginning of a file"""
-    # define name of temporary dummy file
-    dummy_file = file_name + '.bak'
-    # open given original file in read mode and dummy file in write mode
-    with open(file_name, 'r') as read_obj, open(dummy_file, 'w') as write_obj:
-        # Iterate over the given list of strings and write them to dummy file as lines
-        for line in list_of_lines:
-            write_obj.write(line + '\n')
-        # Read lines from original file one by one and append them to the dummy file
-        for line in read_obj:
-            write_obj.write(line)
-    # remove original file
-    os.remove(file_name)
-    # Rename dummy file as the original file
-    os.rename(dummy_file, file_name)
 
 
-def prepend_multiple_lines(file_name, file_copy_from):
+# def prepend_multiple_lines(file_name, list_of_lines):
+#     """Insert given list of strings as a new lines at the beginning of a file"""
+#     # define name of temporary dummy file
+#     dummy_file = file_name + '.bak'
+#     # open given original file in read mode and dummy file in write mode
+#     with open(file_name, 'r') as read_obj, open(dummy_file, 'w') as write_obj:
+#         first_line = read_obj.seek(0)
+#         print(first_line)
+#         # Iterate over the given list of strings and write them to dummy file as lines
+#         for line in list_of_lines:
+#             write_obj.write(line)
+#         # Read lines from original file one by one and append them to the dummy file
+#         for line in read_obj:
+#             write_obj.write(line)
+#     # remove original file
+#     os.remove(file_name)
+#     # Rename dummy file as the original file
+#     os.rename(dummy_file, file_name)
+
+
+def prepend_multiple_lines(file_name, file_copy_from, already_exist):
     """Insert given list of strings as a new lines at the beginning of a file"""
     # define name of temporary dummy file
     dummy_file = file_name + '.bak'
     # open given original file in read mode and dummy file in write mode
     with open(file_name, 'r') as read_obj, open(dummy_file, 'w') as write_obj, open(file_copy_from) as string_to_add:
-        # Iterate over the given list of strings and write them to dummy file as lines
+        first_line = read_obj.readline()
+        if first_line == already_exist:
+            write_obj.close()
+            os.remove(dummy_file)
+            raise Exception('Copyright exist already')
+            # Iterate over the given list of strings and write them to dummy file as lines
         list_of_lines = string_to_add.readlines()
         for line in list_of_lines:
-            write_obj.write(line + '\n')
+            write_obj.write(line)
         # Read lines from original file one by one and append them to the dummy file
+        write_obj.write(first_line)
         for line in read_obj:
             write_obj.write(line)
     # remove original file
@@ -146,20 +156,31 @@ def prepend_multiple_lines(file_name, file_copy_from):
     os.rename(dummy_file, file_name)
 
 
-def prepend_multiple_lines_all_files_in_folder(folder_path, file_copy_from, extention):
+def prepend_multiple_lines_all_files_in_folder(folder_path, file_copy_from, extention, already_exist):
     """Insert given text from a file to all the files  in a certain folder with a given extension"""
     list_of_files = get_filesnames_from_folder(folder_path)
     for file in list_of_files:
         ext = get_name_or_extention(file, True)
         if ext == extention:
             file_path = folder_path + '\\' + file
-            prepend_multiple_lines(file_path, file_copy_from)
+            try:
+                prepend_multiple_lines(file_path, file_copy_from, already_exist)
+            except Exception:
+                print('already exist copyright in file ' + file)
+                continue
 
 
-def prepend_multiple_lines_all_files_in_subfolder(folder_path, file_copy_from, extention):
+def prepend_multiple_lines_all_files_in_subfolder(folder_path, file_copy_from, extention, already_exist):
     list_d = list_subdirectories(folder_path)
     for folder in list_d:
-        prepend_multiple_lines_all_files_in_folder(folder, file_copy_from, extention)
+        prepend_multiple_lines_all_files_in_folder(folder, file_copy_from, extention, already_exist)
 
-folder_root = r'C:\Users\Pini\IdeaProjects\iTextPdfTuto'
-prepend_multiple_lines_all_files_in_subfolder(folder_root, r'C:\Users\Pini\PycharmProjects\yonitools\tools_os\copyright.txt', 'java')
+
+
+
+
+folder_real_time = r'C:\Tech\code\TK-Gatsbi-Module\tk-web\angular\front\src'
+
+copyHTML = r'C:\Users\pzrouya\PycharmProjects\python_tools\assets\HtmlCopyright.txt'
+
+prepend_multiple_lines_all_files_in_subfolder(folder_real_time, copyHTML, 'html', '<!-- \n')
