@@ -1,4 +1,5 @@
 # This is a sample Python script.
+import tools_os.os_tools as tools
 
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
@@ -14,3 +15,4 @@ if __name__ == '__main__':
     print_hi('PyCharm')
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
+tools.normalize_filesnames_in_folder(r'C:\Users\Pini\Downloads')
