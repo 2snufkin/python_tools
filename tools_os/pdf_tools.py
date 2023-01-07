@@ -76,4 +76,3 @@ def extract_text_from_page(pdfReader, page_no):
     return pdfReader.pages[page_no].extract_text()
 
 
-reverse_pdf(r'D:\Books\itext7buildingblocks.pdf')
